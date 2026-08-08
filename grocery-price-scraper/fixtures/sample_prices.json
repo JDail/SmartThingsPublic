@@ -1,0 +1,70 @@
+{
+  "_comment": "Synthetic demo data so you can see the whole pipeline (matching, optimizer, HTML report) without an Apify token. Matches config/shopping_list.yaml's default items. Prices are made up, not real.",
+  "Tesco": [
+    {"title": "Tesco Semi Skimmed Milk 2L", "price": 1.65, "unitPrice": 0.83, "inStock": true},
+    {"title": "Tesco British Free Range Eggs 6 Pack", "price": 1.95, "unitPrice": 0.33, "inStock": true},
+    {"title": "Tesco Wholemeal Bread 800g", "price": 1.30, "unitPrice": 1.63, "inStock": true},
+    {"title": "Tesco Loose Bananas", "price": 0.99, "unitPrice": 0.99, "inStock": true},
+    {"title": "Tesco Chicken Breast Fillets 500g", "price": 3.75, "unitPrice": 7.50, "inStock": true},
+    {"title": "Tesco Mature Cheddar 400g", "price": 3.20, "unitPrice": 8.00, "inStock": true},
+    {"title": "Tesco Baked Beans In Tomato Sauce 415g", "price": 0.42, "unitPrice": 1.01, "inStock": true},
+    {"title": "Tesco Washing Up Liquid 780ml", "price": 1.10, "unitPrice": 1.41, "inStock": true}
+  ],
+  "Asda": [
+    {"title": "ASDA Semi Skimmed Milk 2L", "price": 1.55, "unitPrice": 0.78, "inStock": true},
+    {"title": "ASDA British Free Range Eggs 6 Pack", "price": 1.79, "unitPrice": 0.30, "inStock": true},
+    {"title": "ASDA Wholemeal Bread 800g", "price": 1.10, "unitPrice": 1.38, "inStock": true},
+    {"title": "ASDA Loose Bananas", "price": 0.89, "unitPrice": 0.89, "inStock": true},
+    {"title": "ASDA Chicken Breast Fillets 500g", "price": 3.50, "unitPrice": 7.00, "inStock": true},
+    {"title": "ASDA Mature Cheddar 400g", "price": 2.95, "unitPrice": 7.38, "inStock": true},
+    {"title": "ASDA Baked Beans In Tomato Sauce 415g", "price": 0.39, "unitPrice": 0.94, "inStock": true},
+    {"title": "ASDA Washing Up Liquid 780ml", "price": 0.99, "unitPrice": 1.27, "inStock": true}
+  ],
+  "Sainsburys": [
+    {"title": "Sainsbury's Semi Skimmed Milk 2L", "price": 1.70, "unitPrice": 0.85, "inStock": true},
+    {"title": "Sainsbury's Free Range Eggs 6 Pack", "price": 2.10, "unitPrice": 0.35, "inStock": true},
+    {"title": "Sainsbury's Wholemeal Bread 800g", "price": 1.35, "unitPrice": 1.69, "inStock": true},
+    {"title": "Sainsbury's Loose Bananas", "price": 1.05, "unitPrice": 1.05, "inStock": true},
+    {"title": "Sainsbury's Chicken Breast Fillets 500g", "price": 4.00, "unitPrice": 8.00, "inStock": true},
+    {"title": "Sainsbury's Mature Cheddar 400g", "price": 3.40, "unitPrice": 8.50, "inStock": true},
+    {"title": "Sainsbury's Baked Beans In Tomato Sauce 415g", "price": 0.45, "unitPrice": 1.08, "inStock": true},
+    {"title": "Sainsbury's Washing Up Liquid 780ml", "price": 1.20, "unitPrice": 1.54, "inStock": true}
+  ],
+  "Morrisons": [
+    {"title": "Morrisons Semi Skimmed Milk 2L", "price": 1.60, "unitPrice": 0.80, "inStock": true},
+    {"title": "Morrisons Free Range Eggs 6 Pack", "price": 1.85, "unitPrice": 0.31, "inStock": true},
+    {"title": "Morrisons Wholemeal Bread 800g", "price": 1.15, "unitPrice": 1.44, "inStock": true},
+    {"title": "Morrisons Loose Bananas", "price": 0.95, "unitPrice": 0.95, "inStock": true},
+    {"title": "Morrisons Chicken Breast Fillets 500g", "price": 3.60, "unitPrice": 7.20, "inStock": true},
+    {"title": "Morrisons Mature Cheddar 400g", "price": 3.00, "unitPrice": 7.50, "inStock": true},
+    {"title": "Morrisons Baked Beans In Tomato Sauce 415g", "price": 0.40, "unitPrice": 0.96, "inStock": true},
+    {"title": "Morrisons Washing Up Liquid 780ml", "price": 1.05, "unitPrice": 1.35, "inStock": true}
+  ],
+  "Waitrose": [
+    {"title": "Waitrose Semi Skimmed Milk 2L", "price": 1.90, "unitPrice": 0.95, "inStock": true},
+    {"title": "Waitrose Free Range Eggs 6 Pack", "price": 2.40, "unitPrice": 0.40, "inStock": true},
+    {"title": "Waitrose Wholemeal Bread 800g", "price": 1.60, "unitPrice": 2.00, "inStock": true},
+    {"title": "Waitrose Loose Bananas", "price": 1.15, "unitPrice": 1.15, "inStock": true},
+    {"title": "Waitrose Chicken Breast Fillets 500g", "price": 4.50, "unitPrice": 9.00, "inStock": true},
+    {"title": "Waitrose Mature Cheddar 400g", "price": 3.80, "unitPrice": 9.50, "inStock": true},
+    {"title": "Waitrose Baked Beans In Tomato Sauce 415g", "price": 0.55, "unitPrice": 1.33, "inStock": true},
+    {"title": "Waitrose Washing Up Liquid 780ml", "price": 1.40, "unitPrice": 1.79, "inStock": true}
+  ],
+  "Aldi": [
+    {"title": "Aldi Semi Skimmed Milk 2L", "price": 1.45, "unitPrice": 0.73, "inStock": true},
+    {"title": "Aldi Free Range Eggs 6 Pack", "price": 1.55, "unitPrice": 0.26, "inStock": true},
+    {"title": "Aldi Wholemeal Bread 800g", "price": 0.95, "unitPrice": 1.19, "inStock": true},
+    {"title": "Aldi Loose Bananas", "price": 0.79, "unitPrice": 0.79, "inStock": true},
+    {"title": "Aldi Chicken Breast Fillets 500g", "price": 3.10, "unitPrice": 6.20, "inStock": true},
+    {"title": "Aldi Mature Cheddar 400g", "price": 2.60, "unitPrice": 6.50, "inStock": true},
+    {"title": "Aldi Baked Beans In Tomato Sauce 415g", "price": 0.32, "unitPrice": 0.77, "inStock": true},
+    {"title": "Aldi Washing Up Liquid 780ml", "price": 0.85, "unitPrice": 1.09, "inStock": true}
+  ],
+  "Iceland": [
+    {"title": "Iceland Semi Skimmed Milk 2L", "price": 1.50, "unitPrice": 0.75, "inStock": true},
+    {"title": "Iceland Free Range Eggs 6 Pack", "price": 1.70, "unitPrice": 0.28, "inStock": true},
+    {"title": "Iceland Wholemeal Bread 800g", "price": 1.00, "unitPrice": 1.25, "inStock": false},
+    {"title": "Iceland Chicken Breast Fillets 500g", "price": 3.25, "unitPrice": 6.50, "inStock": true},
+    {"title": "Iceland Baked Beans In Tomato Sauce 415g", "price": 0.35, "unitPrice": 0.84, "inStock": true}
+  ]
+}

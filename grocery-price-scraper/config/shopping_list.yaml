@@ -1,0 +1,46 @@
+# Your regular shopping list. Edit this to match what you actually buy each
+# week - the tool re-prices exactly these items every run.
+#
+# aliases: alternative search phrasings tried against each store's search API
+# (e.g. brand name, size) if the plain `name` doesn't return a good match.
+
+items:
+  - name: Semi skimmed milk 2L
+    quantity: 1
+    unit: each
+    aliases: ["semi skimmed milk 2 litre"]
+
+  - name: Free range eggs, box of 6
+    quantity: 1
+    unit: each
+    aliases: ["free range eggs 6 pack"]
+
+  - name: Wholemeal bread loaf
+    quantity: 1
+    unit: each
+    aliases: ["wholemeal bread 800g"]
+
+  - name: Bananas
+    quantity: 1
+    unit: kg
+    aliases: ["loose bananas"]
+
+  - name: Chicken breast fillets 500g
+    quantity: 1
+    unit: each
+    aliases: ["chicken breast fillets"]
+
+  - name: Cheddar cheese 400g
+    quantity: 1
+    unit: each
+    aliases: ["mature cheddar 400g"]
+
+  - name: Baked beans
+    quantity: 2
+    unit: each
+    aliases: ["baked beans in tomato sauce 415g"]
+
+  - name: Washing up liquid
+    quantity: 1
+    unit: each
+    aliases: ["washing up liquid 780ml"]

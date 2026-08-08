@@ -1,0 +1,240 @@
+# Store configuration: which Apify actor scrapes each store, how to read its
+# output, and each store's fulfillment fees.
+#
+# IMPORTANT - read this before trusting the numbers below:
+#   `verified: false` on a fulfillment option means the fee is a placeholder,
+#   not a confirmed current figure. Confirmed as of Aug 2026 research: Tesco,
+#   Asda, Sainsbury's delivery/click&collect thresholds. Everything else
+#   (Morrisons, Waitrose, Ocado, Aldi, Iceland) is an estimate - check the
+#   store's own delivery pricing page and correct it before trusting the
+#   recommendation for real money. Fees change often and vary by postcode.
+#
+#   `apify_actor_id: null` means no reliable scraper actor was found for that
+#   store - it's excluded from automated price fetching (see notes).
+#
+#   `fields:` maps this specific actor's output JSON keys to name/price/
+#   unit_price/in_stock. These are best guesses from the actor's public
+#   description, not a verified schema - after your first real (non-demo) run,
+#   check output/*.raw.json and fix the field names if quotes come back empty.
+
+stores:
+  - name: Tesco
+    enabled: true
+    apify_actor_id: jupri/tesco-grocery
+    apify_search_field: searchTerms
+    fields:
+      name: title
+      price: price
+      unit_price: unitPrice
+      in_stock: inStock
+    fulfillment:
+      - kind: delivery
+        available: true
+        fee: 4.5
+        verified: false
+        notes: "Delivery £3-£7 depending on slot/location (Which?, Aug 2026). Using midpoint - check your slot."
+      - kind: click_collect
+        available: true
+        fee: 1.0
+        surcharge_under: 25
+        surcharge_amount: 5.0
+        verified: true
+        notes: "£0-£2 depending on location; £25 minimum basket, £5 surcharge if under."
+      - kind: in_store
+        available: true
+        fee: 0.0
+        verified: true
+
+  - name: Asda
+    enabled: true
+    apify_actor_id: illehius/asda-scraper
+    apify_search_field: searchTerms
+    fields:
+      name: title
+      price: price
+      unit_price: unitPrice
+      in_stock: inStock
+    fulfillment:
+      - kind: delivery
+        available: true
+        fee: 3.0
+        free_over: 40
+        verified: true
+        notes: "£3 under £40 basket, free at/over £40. Delivery Pass subscription not modelled."
+      - kind: click_collect
+        available: true
+        fee: 3.0
+        free_over: 25
+        verified: true
+        notes: "£3 under £25 basket, free at/over £25."
+      - kind: in_store
+        available: true
+        fee: 0.0
+        verified: true
+
+  - name: Sainsburys
+    enabled: true
+    apify_actor_id: illehius/sainsburys-scraper
+    apify_search_field: searchTerms
+    fields:
+      name: title
+      price: price
+      unit_price: unitPrice
+      in_stock: inStock
+    fulfillment:
+      - kind: delivery
+        available: true
+        fee: 4.5
+        free_over: 40
+        verified: false
+        notes: "Delivery fee not confirmed in research - placeholder, check sainsburys.co.uk."
+      - kind: click_collect
+        available: true
+        fee: 4.0
+        free_over: 40
+        verified: true
+        notes: "£4 under £40 basket, free at/over £40. Same-day collect adds £2 under £25 - not modelled."
+      - kind: in_store
+        available: true
+        fee: 0.0
+        verified: true
+
+  - name: Morrisons
+    enabled: true
+    apify_actor_id: studio-amba/morrisons-scraper
+    apify_search_field: searchTerms
+    fields:
+      name: title
+      price: price
+      unit_price: unitPrice
+      in_stock: inStock
+    fulfillment:
+      - kind: delivery
+        available: true
+        fee: 5.0
+        free_over: 40
+        verified: false
+        notes: "Morrisons uses Anytime/Midweek delivery passes (£5-£8/mo) rather than a simple per-order fee. Placeholder flat fee - check morrisons.com for your postcode."
+      - kind: click_collect
+        available: false
+        verified: false
+        notes: "Limited click&collect availability - confirm for your store before enabling."
+      - kind: in_store
+        available: true
+        fee: 0.0
+        verified: true
+
+  - name: Waitrose
+    enabled: true
+    apify_actor_id: illehius/waitrose-scraper
+    apify_search_field: searchTerms
+    fields:
+      name: title
+      price: price
+      unit_price: unitPrice
+      in_stock: inStock
+    fulfillment:
+      - kind: delivery
+        available: true
+        fee: 6.0
+        free_over: 60
+        verified: false
+        notes: "Placeholder - not confirmed. Waitrose typically waives fees for myWaitrose members over a spend threshold; check current terms."
+      - kind: click_collect
+        available: true
+        fee: 0.0
+        verified: false
+        notes: "Placeholder - Waitrose click&collect has historically been free; confirm."
+      - kind: in_store
+        available: true
+        fee: 0.0
+        verified: true
+
+  - name: Ocado
+    enabled: true
+    apify_actor_id: null
+    apify_search_field: searchTerms
+    fields:
+      name: title
+      price: price
+      unit_price: unitPrice
+      in_stock: inStock
+    fulfillment:
+      - kind: delivery
+        available: true
+        fee: 5.5
+        free_over: 40
+        verified: false
+        notes: "Placeholder - Ocado is delivery-only, fee varies by slot and Smart Pass status; confirm."
+      - kind: click_collect
+        available: false
+      - kind: in_store
+        available: false
+        notes: "Ocado has no physical stores."
+    notes: "No dedicated Ocado Apify actor confirmed at time of writing - covered instead via the Trolley.co.uk multi-retailer actor (studio-amba/uk-grocery-price-matrix) if enabled below."
+
+  - name: Aldi
+    enabled: true
+    apify_actor_id: studio-amba/aldi-scraper
+    apify_search_field: searchTerms
+    fields:
+      name: title
+      price: price
+      unit_price: unitPrice
+      in_stock: inStock
+    fulfillment:
+      - kind: delivery
+        available: false
+        notes: "Aldi UK does not offer its own grocery delivery/click&collect."
+      - kind: click_collect
+        available: false
+      - kind: in_store
+        available: true
+        fee: 0.0
+        verified: true
+
+  - name: Iceland
+    enabled: true
+    apify_actor_id: null
+    apify_search_field: searchTerms
+    fields:
+      name: title
+      price: price
+      unit_price: unitPrice
+      in_stock: inStock
+    fulfillment:
+      - kind: delivery
+        available: true
+        fee: 3.0
+        free_over: 40
+        verified: false
+        notes: "Placeholder - confirm at iceland.co.uk, fee is usually small and often free over a basket threshold."
+      - kind: click_collect
+        available: false
+      - kind: in_store
+        available: true
+        fee: 0.0
+        verified: true
+    notes: "No confirmed dedicated Iceland Apify actor at time of writing - search the Apify Store before enabling; left as apify_actor_id: null so it's skipped until you wire one up."
+
+  - name: Poundland
+    enabled: false
+    apify_actor_id: null
+    fulfillment:
+      - kind: delivery
+        available: false
+      - kind: click_collect
+        available: false
+      - kind: in_store
+        available: true
+        fee: 0.0
+        verified: true
+    notes: "No online grocery ordering or price-scraping actor found - Poundland is in-store only and not price-tagged per item online. Disabled by default; check prices manually if it matters for your list."
+
+# Optional: a single actor that scrapes Trolley.co.uk itself and already
+# aggregates Tesco/Asda/Sainsbury's/Morrisons/Waitrose/Ocado/Aldi price
+# comparisons. Worth trying as an alternative to running 6+ separate actors -
+# see README for the tradeoff.
+trolley_aggregator:
+  enabled: false
+  apify_actor_id: studio-amba/uk-grocery-price-matrix
