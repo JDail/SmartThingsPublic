@@ -13,12 +13,16 @@
   .banner.incomplete { background: #fdecc8; color: #7a4a00; }
   table { border-collapse: collapse; width: 100%; margin: 0.75rem 0 1.5rem; font-size: 0.92rem; }
   th, td { border: 1px solid #ccc; padding: 0.4rem 0.6rem; text-align: left; }
-  th { background: #f2f2f2; }
+  /* Explicit dark text - th always has a light background regardless of
+     light/dark mode, but without this the browser's dark-mode default text
+     color (light) makes headers invisible against it. */
+  th { background: #f2f2f2; color: #1a1a1a; }
   .num { text-align: right; font-variant-numeric: tabular-nums; }
   .best { font-weight: 700; }
   .muted { color: #777; font-size: 0.85rem; }
   .unverified { color: #a15c00; }
   .missing { color: #b00020; }
+  .low-match { color: #c1440e; font-weight: 700; background: #fbe4d9; padding: 0.1rem 0.35rem; border-radius: 4px; }
   section { margin-bottom: 2rem; }
 </style>
 </head>
@@ -109,7 +113,9 @@
     {% if q %}
     <td>{{ q.store }}</td>
     <td class="num">£{{ "%.2f"|format(q.price) }}</td>
-    <td class="muted">{{ q.matched_product_name }} (match {{ "%.0f"|format(q.match_score * 100) }}%)</td>
+    <td class="muted">{{ q.matched_product_name }}
+      <span class="{{ 'low-match' if q.match_score < 0.85 else '' }}">(match {{ "%.0f"|format(q.match_score * 100) }}%)</span>
+    </td>
     {% else %}
     <td colspan="3" class="missing">not found at any store</td>
     {% endif %}
