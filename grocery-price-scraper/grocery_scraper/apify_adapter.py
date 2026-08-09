@@ -39,7 +39,10 @@ class ApifyAdapter:
 
         logger.info("Running actor %s for %s (%d search terms)", store.apify_actor_id, store.name, len(search_terms))
         run = self.client.actor(store.apify_actor_id).call(run_input=run_input)
-        dataset_id = run["defaultDatasetId"]
+        # apify-client >=3 returns a typed Run model (snake_case attrs), not a raw dict -
+        # run["defaultDatasetId"] used to work on older client versions but raises
+        # "'Run' object is not subscriptable" on this one.
+        dataset_id = run.default_dataset_id
         products = list(self.client.dataset(dataset_id).iterate_items())
 
         if self.raw_dump_dir is not None:
