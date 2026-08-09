@@ -80,6 +80,32 @@ def fetch_live(shopping_list, stores, output_dir: Path) -> dict[str, list[dict]]
     return raw_by_store
 
 
+def _effective_manual_price(entry, quantity: float) -> float:
+    """A manual_prices entry is either a flat number (plain unit price), or a
+    dict describing a multi-buy deal:
+        {"price": 1.75, "deal_quantity": 2, "deal_price": 3.00}
+    meaning "2 for £3, otherwise £1.75 each". Returns the effective price PER
+    UNIT for buying exactly `quantity` of them - as many deal-bundles as fit,
+    the remainder at the regular price - so the rest of the pipeline (which
+    does price * quantity) still lands on the correct total. This is why the
+    "price" shown in the report for a deal item may not match the shelf
+    price: it's the blended average for the quantity you actually asked for.
+    """
+    if not isinstance(entry, dict):
+        return float(entry)
+
+    unit_price = float(entry["price"])
+    deal_qty = entry.get("deal_quantity")
+    deal_price = entry.get("deal_price")
+    if not deal_qty or deal_price is None or quantity <= 0:
+        return unit_price
+
+    whole_units = int(round(quantity))
+    num_deals, remainder = divmod(whole_units, int(deal_qty))
+    total = num_deals * float(deal_price) + remainder * unit_price
+    return total / quantity
+
+
 def build_manual_quotes(shopping_list, catalog: list[CatalogItem], store_name: str) -> dict[str, PriceQuote]:
     """Prices you've noted yourself in config/catalog.yaml's manual_prices,
     for stores with no working scraper. Exact catalog-name lookup, not fuzzy
@@ -90,14 +116,14 @@ def build_manual_quotes(shopping_list, catalog: list[CatalogItem], store_name: s
         cat_item = catalog_by_name.get(item.name)
         if cat_item is None:
             continue
-        price = cat_item.manual_prices.get(store_name)
-        if price is None:
+        entry = cat_item.manual_prices.get(store_name)
+        if entry is None:
             continue
         quotes[item.name] = PriceQuote(
             store=store_name,
             item_name=item.name,
             matched_product_name=item.name,
-            price=float(price),
+            price=_effective_manual_price(entry, item.quantity),
             unit_price=None,
             in_stock=True,
             match_score=1.0,

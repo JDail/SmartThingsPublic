@@ -55,6 +55,19 @@ def test_delete_removes_product(client):
     assert b"Delete Me" not in r.data
 
 
+def test_update_price_with_deal_fields_saves_as_deal_structure(client):
+    client.post(
+        "/catalog/Cravendale Filtered Fresh Whole Milk 2L/price",
+        data={"store": "Iceland", "price": "1.75", "deal_quantity": "2", "deal_price": "3.00"},
+    )
+    written = webui.CATALOG_PATH.read_text(encoding="utf-8")
+    assert "deal_quantity: 2" in written
+    assert "deal_price: 3.0" in written
+    # The plain-price display field on the page should still show the regular price.
+    r = client.get("/")
+    assert b'value="1.75"' in r.data
+
+
 def test_select_writes_shopping_list_with_chosen_quantity(client):
     r = client.post(
         "/select",

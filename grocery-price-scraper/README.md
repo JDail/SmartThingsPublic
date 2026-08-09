@@ -33,10 +33,15 @@ store, not just item prices.
 1. `config/catalog.yaml` — your **master catalog**: everything you might
    buy, with a default quantity, search aliases, and any manual prices
    you've noted for stores with no scraper (e.g. Iceland).
-2. `python -m grocery_scraper.select_items` — an interactive checklist
-   (tick what you want this week, confirm/change quantities) that generates
-   `config/shopping_list.yaml` from your catalog. Run this before each
-   price review. Don't hand-edit `shopping_list.yaml` — it gets overwritten.
+2. Pick this week's items from the catalog, either via:
+   - `python -m grocery_scraper.select_items` — a terminal checklist (tick
+     what you want, confirm/change quantities), or
+   - `python -m grocery_scraper.webui` — a local browser UI at
+     `http://127.0.0.1:5050` for the same thing, plus adding new products
+     and editing manual prices (including deals) without touching YAML.
+
+   Both generate `config/shopping_list.yaml` from your catalog. Don't
+   hand-edit `shopping_list.yaml` — it gets overwritten.
 3. `config/stores.yaml` — which store, which Apify actor scrapes it (or
    `manual: true` for stores priced from the catalog instead), and each
    store's delivery/click&collect fees.
@@ -101,10 +106,19 @@ the fix without paying for another live run.
 
 Since there's no working scraper for Iceland, `config/catalog.yaml` has a
 `manual_prices` field per item. Whenever you shop there, jot the current
-price into the relevant item's `manual_prices: {Iceland: X.XX}` — exact
-name-based lookup, no fuzzy matching, so there's no risk of it picking the
-wrong product. Stale prices are still better than no price, but don't let
-them go too many weeks without a refresh.
+price in — either directly in the catalog file or via the price fields in
+`python -m grocery_scraper.webui` — exact name-based lookup, no fuzzy
+matching, so there's no risk of it picking the wrong product. Stale prices
+are still better than no price, but don't let them go too many weeks without
+a refresh.
+
+**Multi-buy deals** ("2 for £3" instead of a flat unit price) are supported:
+set the item's manual price to `{price: 1.75, deal_quantity: 2, deal_price: 3.00}`
+instead of a plain number (the web UI's "deal" fields do this for you). The
+tool works out the cheapest combination of deal-bundles + regular price for
+whatever quantity you're actually buying that week — so the price shown in
+the report is the *effective* per-unit price for your quantity, not
+necessarily the shelf price.
 
 ## Things you need to verify before trusting this with real money
 

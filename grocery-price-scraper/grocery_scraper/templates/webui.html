@@ -81,11 +81,16 @@
   <td>{{ item.default_quantity }}</td>
   <td class="muted">{{ item.aliases|join(", ") }}</td>
   {% for store in manual_stores %}
+  {% set f = price_fields[item.name][store] %}
   <td>
     <form class="price-form" method="post" action="{{ url_for('update_price', name=item.name) }}">
       <input type="hidden" name="store" value="{{ store }}">
       <span>£</span>
-      <input type="number" name="price" step="0.01" min="0" value="{{ item.manual_prices.get(store, '') }}">
+      <input type="number" name="price" step="0.01" min="0" value="{{ f.price }}" title="Regular unit price" style="width:4.5rem">
+      <span class="muted">deal:</span>
+      <input type="number" name="deal_quantity" min="2" step="1" value="{{ f.deal_quantity }}" title="e.g. 2 for a &quot;2 for £X&quot; deal" style="width:3rem">
+      <span>for £</span>
+      <input type="number" name="deal_price" step="0.01" min="0" value="{{ f.deal_price }}" title="Deal price for that quantity" style="width:4.5rem">
       <button type="submit">Save</button>
     </form>
   </td>

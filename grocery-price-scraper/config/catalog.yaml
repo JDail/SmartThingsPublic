@@ -12,6 +12,13 @@
 # scraper (currently just Iceland - see README for why). Update these
 # whenever you shop there; stale prices are still better than no price, but
 # don't let them go too many weeks without a refresh.
+#
+# Each entry is either a plain number (regular unit price):
+#   manual_prices: {Iceland: 1.75}
+# or a multi-buy deal ("2 for £3, otherwise £1.75 each"):
+#   manual_prices: {Iceland: {price: 1.75, deal_quantity: 2, deal_price: 3.00}}
+# The tool works out the cheapest combination for whatever quantity you're
+# actually buying - the web UI's per-store price fields handle this for you.
 
 items:
   - name: Onken Fat Free Vanilla Yogurt 450g

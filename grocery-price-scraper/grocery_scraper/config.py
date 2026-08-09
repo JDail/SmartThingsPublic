@@ -49,6 +49,12 @@ CATALOG_HEADER = (
     "#\n"
     "# manual_prices: prices you've noted yourself for stores with no working\n"
     "# scraper (currently just Iceland). Update these whenever you shop there.\n"
+    "# Each entry is either a plain number (regular unit price):\n"
+    "#   manual_prices: {Iceland: 1.75}\n"
+    "# or a multi-buy deal (\"2 for £3, otherwise £1.75 each\"):\n"
+    "#   manual_prices: {Iceland: {price: 1.75, deal_quantity: 2, deal_price: 3.00}}\n"
+    "# The tool works out the cheapest combination for whatever quantity you're\n"
+    "# actually buying - the web UI's per-store price fields handle this for you.\n"
 )
 
 

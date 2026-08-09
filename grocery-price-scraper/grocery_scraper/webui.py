@@ -35,14 +35,35 @@ def _manual_store_names() -> list[str]:
     return [s.name for s in load_stores(STORES_PATH) if s.manual]
 
 
+def _price_field_values(entry) -> dict:
+    """Normalise a manual_prices entry (plain number or deal dict) into the
+    three form-field values the template needs, so no type-branching
+    happens in Jinja."""
+    if entry is None:
+        return {"price": "", "deal_quantity": "", "deal_price": ""}
+    if isinstance(entry, dict):
+        return {
+            "price": entry.get("price", ""),
+            "deal_quantity": entry.get("deal_quantity", ""),
+            "deal_price": entry.get("deal_price", ""),
+        }
+    return {"price": entry, "deal_quantity": "", "deal_price": ""}
+
+
 @app.route("/", methods=["GET"])
 def index():
     catalog = load_catalog(CATALOG_PATH)
+    manual_stores = _manual_store_names()
     saved = request.args.get("saved")
+    price_fields = {
+        item.name: {store: _price_field_values(item.manual_prices.get(store)) for store in manual_stores}
+        for item in catalog
+    }
     return render_template(
         "webui.html",
         catalog=catalog,
-        manual_stores=_manual_store_names(),
+        manual_stores=manual_stores,
+        price_fields=price_fields,
         saved=saved,
     )
 
@@ -80,15 +101,31 @@ def update_price(name):
     catalog = load_catalog(CATALOG_PATH)
     store = request.form.get("store", "").strip()
     raw_price = request.form.get("price", "").strip()
+    raw_deal_qty = request.form.get("deal_quantity", "").strip()
+    raw_deal_price = request.form.get("deal_price", "").strip()
+
     for item in catalog:
-        if item.name == name and store:
-            if raw_price:
-                try:
-                    item.manual_prices[store] = float(raw_price)
-                except ValueError:
-                    pass
-            else:
-                item.manual_prices.pop(store, None)
+        if item.name != name or not store:
+            continue
+        if not raw_price:
+            item.manual_prices.pop(store, None)
+            continue
+        try:
+            price = float(raw_price)
+        except ValueError:
+            continue
+        if raw_deal_qty and raw_deal_price:
+            try:
+                item.manual_prices[store] = {
+                    "price": price,
+                    "deal_quantity": int(raw_deal_qty),
+                    "deal_price": float(raw_deal_price),
+                }
+            except ValueError:
+                item.manual_prices[store] = price
+        else:
+            item.manual_prices[store] = price
+
     save_catalog(CATALOG_PATH, catalog)
     return redirect(url_for("index"))
 
