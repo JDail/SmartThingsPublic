@@ -20,7 +20,13 @@
 stores:
   - name: Tesco
     enabled: true
-    apify_actor_id: jupri/tesco-grocery
+    # jupri/tesco-grocery was tried first but is a legacy "rental" Actor -
+    # $30/month to the Actor author on top of platform usage, not viable for
+    # a weekly personal list. Swapped to illehius/tesco-scraper (same
+    # publisher as the working Asda/Sainsbury's/Waitrose actors below) which
+    # is pay-per-result. Confirm this on the Actor's Apify page before
+    # relying on it, and check output/raw/Tesco.raw.json after first run.
+    apify_actor_id: illehius/tesco-scraper
     apify_search_field: searchTerms
     fields:
       name: title
