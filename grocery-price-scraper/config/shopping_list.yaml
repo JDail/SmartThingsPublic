@@ -3,44 +3,52 @@
 #
 # aliases: alternative search phrasings tried against each store's search API
 # (e.g. brand name, size) if the plain `name` doesn't return a good match.
+#
+# Starter list (9 Aug 2026) - real items from your Morrisons order, more to
+# be added over time.
 
 items:
-  - name: Semi skimmed milk 2L
-    quantity: 1
-    unit: each
-    aliases: ["semi skimmed milk 2 litre"]
-
-  - name: Free range eggs, box of 6
-    quantity: 1
-    unit: each
-    aliases: ["free range eggs 6 pack"]
-
-  - name: Wholemeal bread loaf
-    quantity: 1
-    unit: each
-    aliases: ["wholemeal bread 800g"]
-
-  - name: Bananas
-    quantity: 1
-    unit: kg
-    aliases: ["loose bananas"]
-
-  - name: Chicken breast fillets 500g
-    quantity: 1
-    unit: each
-    aliases: ["chicken breast fillets"]
-
-  - name: Cheddar cheese 400g
-    quantity: 1
-    unit: each
-    aliases: ["mature cheddar 400g"]
-
-  - name: Baked beans
+  - name: Onken Fat Free Vanilla Yogurt 450g
     quantity: 2
     unit: each
-    aliases: ["baked beans in tomato sauce 415g"]
+    aliases: ["Onken Vanilla Yogurt", "Onken fat free yogurt vanilla"]
 
-  - name: Washing up liquid
+  - name: Happy Egg Company 10 Large Free Range Eggs
     quantity: 1
     unit: each
-    aliases: ["washing up liquid 780ml"]
+    aliases: ["Happy Egg free range eggs 10", "free range eggs 10 large"]
+
+  - name: Warburtons Toastie White Bread 800g
+    quantity: 1
+    unit: each
+    aliases: ["Warburtons white bread 800g", "Warburtons toastie bread"]
+
+  - name: Baker Street 6 Seeded Burger Buns
+    quantity: 2
+    unit: each
+    aliases: ["Baker Street seeded burger buns", "seeded burger buns 6 pack"]
+
+  - name: Cravendale Filtered Fresh Whole Milk 2L
+    quantity: 6
+    unit: each
+    aliases: ["Cravendale whole milk 2L", "Cravendale filtered milk"]
+
+  - name: Weetabix Chocolate 24 Biscuits
+    quantity: 2
+    unit: each
+    aliases: ["Weetabix Chocolate cereal", "Weetabix chocolate 24"]
+
+  - name: Heinz Baked Beans in Tomato Sauce 6 x 415g
+    quantity: 1
+    unit: each
+    aliases: ["Heinz baked beans 6 pack", "Heinz beanz 6 x 415g"]
+
+  - name: Pepsi Max Cola 2L Bottle
+    quantity: 6
+    unit: each
+    aliases: ["Pepsi Max 2L", "Pepsi Max cola bottle"]
+
+  - name: Pepsi Max No Caffeine No Sugar Cola 2L
+    quantity: 6
+    unit: each
+    aliases: ["Pepsi Max Caffeine Free 2L", "Pepsi Max no caffeine 2L"]

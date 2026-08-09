@@ -19,23 +19,19 @@
 
 stores:
   - name: Tesco
-    enabled: false
-    # jupri/tesco-grocery was tried first but is a legacy "rental" Actor -
-    # $30/month to the Actor author on top of platform usage, not viable for
-    # a weekly personal list. Swapped to illehius/tesco-scraper (same
-    # publisher as the working Asda/Sainsbury's/Waitrose actors below) which
-    # is pay-per-result. Confirm this on the Actor's Apify page before
-    # relying on it, and check output/raw/Tesco.raw.json after first run.
-    #
-    # Real run (9 Aug 2026): actor completed but returned 0 products for
-    # every single search term, then the run itself ended FAILED. Looks
-    # like Tesco is blocking/breaking this actor, not a config problem on
-    # our end. Disabled until a different Tesco actor is tried.
-    apify_actor_id: illehius/tesco-scraper
-    # Confirmed via a real failed run: this actor requires `queries`, not `searchTerms`.
-    apify_search_field: queries
+    enabled: true
+    # Attempt 1, jupri/tesco-grocery: legacy "rental" Actor, $30/month - rejected.
+    # Attempt 2, illehius/tesco-scraper: ran but returned 0 products for every
+    # search term then failed - looked like Tesco blocking/breaking this actor.
+    # Attempt 3 (this one): radeance/tesco-scraper. Search-field name and
+    # output field mapping below are unconfirmed guesses - check
+    # output/raw/Tesco.raw.json after this run and fix if empty/unmatched.
+    apify_actor_id: radeance/tesco-scraper
+    apify_search_field: searchTerms
+    # Guessing `name` rather than `title` - every actor confirmed so far
+    # (Asda, and the previous Morrisons actor's own logs) used `name`.
     fields:
-      name: title
+      name: name
       price: price
       unit_price: unitPrice
       in_stock: inStock
@@ -58,7 +54,10 @@ stores:
         verified: true
 
   - name: Asda
-    enabled: true
+    # Temporarily disabled - already confirmed working (9 Aug 2026) with a
+    # cached raw dump at output/raw/Asda.raw.json. Re-enable once other
+    # stores are confirmed, to save Apify credit on a re-fetch we don't need.
+    enabled: false
     apify_actor_id: illehius/asda-scraper
     # Same publisher as illehius/tesco-scraper, which confirmed `queries` is the
     # required field - confirmed independently for this actor too (real run,
@@ -92,18 +91,17 @@ stores:
         verified: true
 
   - name: Sainsburys
-    enabled: false
+    enabled: true
     apify_actor_id: illehius/sainsburys-scraper
-    # Same publisher as illehius/tesco-scraper, which confirmed `queries` is the
-    # required field - not independently verified for this actor yet.
-    #
     # Real run (9 Aug 2026): every request failed with "Proxy rejected the
     # CONNECT tunnel with status code 403" - the actor's own outbound proxy
-    # is being blocked by Sainsbury's. Probably needs an explicit
-    # proxyConfiguration input (e.g. Apify residential proxy) that we're not
-    # sending - worth checking the actor's input schema for a proxy field
-    # before re-enabling.
+    # was being blocked by Sainsbury's. Retrying with an explicit
+    # proxyConfiguration input (Apify's own proxy) below - unconfirmed
+    # whether this is the actual fix or the right input field name for it.
     apify_search_field: queries
+    apify_extra_input:
+      proxyConfiguration:
+        useApifyProxy: true
     fields:
       name: title
       price: price
@@ -128,23 +126,19 @@ stores:
         verified: true
 
   - name: Morrisons
-    enabled: false
-    apify_actor_id: studio-amba/morrisons-scraper
-    # Different publisher to the illehius actors above - `searchTerms` is an
-    # unconfirmed guess. If this store fails with an "input.X is required"
-    # error, change this field name to match (see Tesco's history above).
-    #
-    # Real run (9 Aug 2026): actor ignored searchTerms entirely and just
-    # crawled the first 100 products of its "full catalog" mode - this
-    # actor's real input schema doesn't take per-item search queries the way
-    # we assumed. Also uses `name` not `title` for the product name field,
-    # and doesn't expose a unit price field at all. Disabled until either
-    # its real input schema is confirmed, or it's swapped for
-    # bobcodgodkid.1/morrisons-grocery-scraper, which claims explicit
-    # search-term support.
+    enabled: true
+    # Attempt 1, studio-amba/morrisons-scraper: ignored our search terms
+    # entirely and just crawled the first 100 products of its "full catalog"
+    # mode - not usable for targeted list lookups.
+    # Attempt 2 (this one): bobcodgodkid.1/morrisons-grocery-scraper, which
+    # claims explicit search-term support. Field name/mapping unconfirmed -
+    # check output/raw/Morrisons.raw.json after this run.
+    apify_actor_id: bobcodgodkid.1/morrisons-grocery-scraper
     apify_search_field: searchTerms
+    # Guessing `name` rather than `title` - every actor confirmed so far
+    # (Asda, and the previous Morrisons actor's own logs) used `name`.
     fields:
-      name: title
+      name: name
       price: price
       unit_price: unitPrice
       in_stock: inStock
@@ -216,19 +210,15 @@ stores:
     notes: "No dedicated Ocado Apify actor confirmed at time of writing - covered instead via the Trolley.co.uk multi-retailer actor (studio-amba/uk-grocery-price-matrix) if enabled below."
 
   - name: Aldi
-    enabled: false
+    enabled: true
     apify_actor_id: studio-amba/aldi-scraper
     # Different publisher to the illehius actors above - `searchTerms` is an
-    # unconfirmed guess. If this store fails with an "input.X is required"
-    # error, change this field name to match (see Tesco's history above).
-    #
-    # Real run (9 Aug 2026): never got to run - ran out of remaining Apify
-    # free-tier credit for the session before reaching this actor. Disabled
-    # for now purely to conserve credit while Asda/Waitrose get confirmed;
-    # not confirmed broken. Re-enable once credit allows.
+    # unconfirmed guess, as is the `name` field below. Never actually run yet
+    # (ran out of credit before reaching it on 9 Aug 2026) - check
+    # output/raw/Aldi.raw.json after this run.
     apify_search_field: searchTerms
     fields:
-      name: title
+      name: name
       price: price
       unit_price: unitPrice
       in_stock: inStock
