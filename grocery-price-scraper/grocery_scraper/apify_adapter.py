@@ -48,7 +48,7 @@ class ApifyAdapter:
         if self.raw_dump_dir is not None:
             self.raw_dump_dir.mkdir(parents=True, exist_ok=True)
             dump_path = self.raw_dump_dir / f"{store.name}.raw.json"
-            dump_path.write_text(json.dumps(products, indent=2, default=str))
+            dump_path.write_text(json.dumps(products, indent=2, default=str), encoding="utf-8")
             logger.info("Wrote raw output for %s to %s (check this if matches look wrong)", store.name, dump_path)
 
         return products

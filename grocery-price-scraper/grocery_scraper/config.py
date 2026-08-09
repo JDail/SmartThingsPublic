@@ -10,7 +10,7 @@ from .models import FieldMapping, FulfillmentOption, ShoppingItem, StoreConfig
 
 
 def load_shopping_list(path: Path) -> list[ShoppingItem]:
-    data = yaml.safe_load(path.read_text())
+    data = yaml.safe_load(path.read_text(encoding="utf-8"))
     return [
         ShoppingItem(
             name=item["name"],
@@ -37,7 +37,7 @@ def _fulfillment_from_dict(d: dict) -> FulfillmentOption:
 
 
 def load_stores(path: Path) -> list[StoreConfig]:
-    data = yaml.safe_load(path.read_text())
+    data = yaml.safe_load(path.read_text(encoding="utf-8"))
     stores = []
     for s in data["stores"]:
         fields_dict = s.get("fields", {})

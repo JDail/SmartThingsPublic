@@ -30,5 +30,7 @@ def render_report(
         run_date=(run_date or date.today()).isoformat(),
     )
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    output_path.write_text(html)
+    # Explicit encoding - Path.write_text() defaults to the OS locale encoding
+    # (cp1252 on Windows), which mangles £ even though the HTML declares utf-8.
+    output_path.write_text(html, encoding="utf-8")
     return output_path

@@ -84,7 +84,7 @@ def main(argv=None):
 
     if args.demo:
         fixture_path = BASE_DIR / "fixtures" / "sample_prices.json"
-        raw_by_store = {k: v for k, v in json.loads(fixture_path.read_text()).items() if not k.startswith("_")}
+        raw_by_store = {k: v for k, v in json.loads(fixture_path.read_text(encoding="utf-8")).items() if not k.startswith("_")}
     else:
         raw_by_store = fetch_live(shopping_list, stores, args.output_dir)
 
