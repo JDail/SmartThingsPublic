@@ -49,3 +49,30 @@ def test_no_plausible_match_returns_none():
     products = [{"name": "Fresh Basil Plant", "price": 1.50}]
     match = best_match(item, "Store", products, FIELDS)
     assert match is None
+
+
+def test_nested_price_field_via_dotted_path():
+    # Sainsbury's actor (dromb/sainsburys-uk-grocery-price-availability) nests
+    # price two levels deep: {"currentPrice": {"value": 0.99, ...}}.
+    fields = FieldMapping(name="name", price="currentPrice.value", unit_price="unitPrice.value", in_stock="availability")
+    item = ShoppingItem(name="Whole Cucumber")
+    products = [{
+        "name": "Sainsbury's Whole Cucumber",
+        "currentPrice": {"value": 0.99, "currency": "GBP"},
+        "unitPrice": {"value": 0.99, "unit": "ea"},
+        "availability": "available",
+    }]
+    match = best_match(item, "Sainsburys", products, fields)
+    assert match is not None
+    assert match.price == 0.99
+    assert match.unit_price == 0.99
+    assert match.in_stock is True
+
+
+def test_string_unavailable_is_not_treated_as_in_stock():
+    fields = FieldMapping(name="name", price="price", unit_price="unitPrice", in_stock="availability")
+    item = ShoppingItem(name="Whole Cucumber")
+    products = [{"name": "Whole Cucumber", "price": 0.99, "availability": "unavailable"}]
+    match = best_match(item, "Store", products, fields)
+    assert match is not None
+    assert match.in_stock is False

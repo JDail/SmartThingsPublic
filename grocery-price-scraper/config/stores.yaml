@@ -19,17 +19,20 @@
 
 stores:
   - name: Tesco
-    enabled: true
+    enabled: false
     # Attempt 1, jupri/tesco-grocery: legacy "rental" Actor, $30/month - rejected.
     # Attempt 2, illehius/tesco-scraper: ran but returned 0 products for every
     # search term then failed - looked like Tesco blocking/breaking this actor.
     # Attempt 3, radeance/tesco-scraper: ignored our searchTerms input
     # entirely (log showed "Keyword: None") and just crawled 27 random
     # products from a general category page - not real search results.
-    # Attempt 4 (this one): ecomscrape/tesco-product-search-scraper - the
-    # "product-search" name suggests real per-term search, unlike the details
-    # scraper from the same publisher. Search field/output mapping below are
-    # unconfirmed guesses - check output/raw/Tesco.raw.json after this run.
+    # Attempt 4, ecomscrape/tesco-product-search-scraper (real run 9 Aug
+    # 2026): another rental trap - "You must rent a paid Actor..." after its
+    # free trial. Two rental actors out of four attempts - Tesco seems
+    # unusually rental-heavy on Apify. Disabled; worth trying the
+    # Trolley.co.uk aggregator actor instead of hunting for another
+    # single-store Tesco actor (see trolley_aggregator block at the bottom
+    # of this file).
     apify_actor_id: ecomscrape/tesco-product-search-scraper
     apify_search_field: searchTerms
     # Guessing `name` rather than `title` - every actor confirmed so far
@@ -103,15 +106,19 @@ stores:
     # regardless of our input.
     # Attempt 2 (this one): dromb/sainsburys-uk-grocery-price-availability -
     # different publisher, confirmed pay-per-result ($0.60/1000 items).
-    # Search field/output mapping unconfirmed - check
-    # output/raw/Sainsburys.raw.json after this run.
+    # Real run (9 Aug 2026): worked, but wraps each result in an envelope
+    # ({"success": true, "data": {...}}) and nests price two levels deep
+    # ({"currentPrice": {"value": 0.99}}) - confirmed via
+    # output/raw/Sainsburys.raw.json. Fixed below with apify_data_root and
+    # dotted field paths.
     apify_actor_id: dromb/sainsburys-uk-grocery-price-availability
     apify_search_field: searchTerms
+    apify_data_root: data
     fields:
       name: name
-      price: price
-      unit_price: unitPrice
-      in_stock: inStock
+      price: currentPrice.value
+      unit_price: unitPrice.value
+      in_stock: availability
     fulfillment:
       - kind: delivery
         available: true
@@ -174,14 +181,14 @@ stores:
         verified: true
 
   - name: Waitrose
-    enabled: true
+    enabled: false
     # Attempt 1, illehius/waitrose-scraper: crashed twice in a row, both
     # times with total data loss (empty dataset despite partial success in
     # the logs) - looks like this actor only writes output at the very end
     # of a run, so any crash loses everything.
-    # Attempt 2 (this one): thenetaji/waitrose-scraper, different publisher,
-    # explicitly claims per-search-term support. Search field/output mapping
-    # unconfirmed - check output/raw/Waitrose.raw.json after this run.
+    # Attempt 2, thenetaji/waitrose-scraper (real run 9 Aug 2026): rental
+    # trap - "You must rent a paid Actor...". Disabled; worth trying the
+    # Trolley.co.uk aggregator instead (see trolley_aggregator block below).
     apify_actor_id: thenetaji/waitrose-scraper
     apify_search_field: searchTerms
     fields:
@@ -230,14 +237,18 @@ stores:
     notes: "No dedicated Ocado Apify actor confirmed at time of writing - covered instead via the Trolley.co.uk multi-retailer actor (studio-amba/uk-grocery-price-matrix) if enabled below."
 
   - name: Aldi
-    enabled: true
+    enabled: false
     # Attempt 1, studio-amba/aldi-scraper: never actually ran - its estimated
     # job cost kept exceeding the remaining free-tier budget (~$3-4), even
     # though we only sent 27 search terms. Likely defaults to a large/full
     # catalog crawl like the first Morrisons actor did.
-    # Attempt 2 (this one): illehius/aldi-uk-scraper - same publisher as our
-    # working Asda actor, so reusing its confirmed `queries` field name and
-    # `name` output field as a strong first guess rather than starting blind.
+    # Attempt 2, illehius/aldi-uk-scraper (real run 9 Aug 2026): the `queries`/
+    # `name` guess (reused from the working Asda actor) was actually correct -
+    # genuinely found 20 products per search term for 11/27 queries - but then
+    # crashed (FAILED status) and the dataset came back completely empty, same
+    # "only writes output at the end" failure as the old Waitrose actor.
+    # Disabled pending a retry or a different actor; the field mapping below
+    # is believed correct if/when this gets a clean run.
     apify_actor_id: illehius/aldi-uk-scraper
     apify_search_field: queries
     fields:

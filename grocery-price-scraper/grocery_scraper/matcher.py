@@ -20,6 +20,28 @@ def _word_tokens(text: str) -> set[str]:
     return set(_WORD_RE.findall(text.lower()))
 
 
+def _get_path(product: dict, path: str):
+    """Look up a field that may be nested, e.g. "currentPrice.value" for
+    {"currentPrice": {"value": 0.99, ...}}. A plain key with no "." works
+    exactly as a normal dict lookup."""
+    value = product
+    for part in path.split("."):
+        if not isinstance(value, dict):
+            return None
+        value = value.get(part)
+    return value
+
+
+def _coerce_in_stock(value) -> bool:
+    """Stock fields show up as bool, or as strings like "available"/"out_of_stock" -
+    a bare bool(value) would misread any non-empty string (even "unavailable") as True."""
+    if value is None:
+        return True  # unknown -> assume available, matching prior behaviour
+    if isinstance(value, str):
+        return value.strip().lower() not in ("", "false", "no", "0", "unavailable", "out_of_stock", "out of stock")
+    return bool(value)
+
+
 def _score(term: str, candidate_name: str) -> float:
     """Character-sequence similarity alone is too forgiving of a dropped word
     or changed number (e.g. "Pepsi Max Cola" vs "Pepsi Cola" scored ~90% on
@@ -54,8 +76,8 @@ def best_match(
     best_product = None
 
     for product in raw_products:
-        name = product.get(fields.name)
-        price = product.get(fields.price)
+        name = _get_path(product, fields.name)
+        price = _get_path(product, fields.price)
         if not name or price is None:
             continue
         score = max(_score(term, name) for term in search_terms)
@@ -69,9 +91,9 @@ def best_match(
     return PriceQuote(
         store=store_name,
         item_name=item.name,
-        matched_product_name=best_product[fields.name],
-        price=float(best_product[fields.price]),
-        unit_price=best_product.get(fields.unit_price),
-        in_stock=bool(best_product.get(fields.in_stock, True)),
+        matched_product_name=_get_path(best_product, fields.name),
+        price=float(_get_path(best_product, fields.price)),
+        unit_price=_get_path(best_product, fields.unit_price),
+        in_stock=_coerce_in_stock(_get_path(best_product, fields.in_stock)),
         match_score=round(best_score, 3),
     )
