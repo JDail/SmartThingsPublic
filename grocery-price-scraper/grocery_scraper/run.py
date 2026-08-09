@@ -56,7 +56,13 @@ def fetch_live(shopping_list, stores, output_dir: Path) -> dict[str, list[dict]]
     for store in stores:
         if not store.enabled or not store.apify_actor_id:
             continue
-        raw_by_store[store.name] = adapter.fetch_products(store, shopping_list)
+        try:
+            raw_by_store[store.name] = adapter.fetch_products(store, shopping_list)
+        except Exception as exc:
+            # Don't let one bad actor (wrong input schema, rental required, down, etc.)
+            # take out the whole run - log it and let the other stores still produce a report.
+            logger.warning("%s actor run failed, skipping this store: %s", store.name, exc)
+            raw_by_store[store.name] = []
     return raw_by_store
 
 

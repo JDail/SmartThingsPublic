@@ -27,7 +27,8 @@ stores:
     # is pay-per-result. Confirm this on the Actor's Apify page before
     # relying on it, and check output/raw/Tesco.raw.json after first run.
     apify_actor_id: illehius/tesco-scraper
-    apify_search_field: searchTerms
+    # Confirmed via a real failed run: this actor requires `queries`, not `searchTerms`.
+    apify_search_field: queries
     fields:
       name: title
       price: price
@@ -54,7 +55,9 @@ stores:
   - name: Asda
     enabled: true
     apify_actor_id: illehius/asda-scraper
-    apify_search_field: searchTerms
+    # Same publisher as illehius/tesco-scraper, which confirmed `queries` is the
+    # required field - not independently verified for this actor yet.
+    apify_search_field: queries
     fields:
       name: title
       price: price
@@ -81,7 +84,9 @@ stores:
   - name: Sainsburys
     enabled: true
     apify_actor_id: illehius/sainsburys-scraper
-    apify_search_field: searchTerms
+    # Same publisher as illehius/tesco-scraper, which confirmed `queries` is the
+    # required field - not independently verified for this actor yet.
+    apify_search_field: queries
     fields:
       name: title
       price: price
@@ -108,6 +113,9 @@ stores:
   - name: Morrisons
     enabled: true
     apify_actor_id: studio-amba/morrisons-scraper
+    # Different publisher to the illehius actors above - `searchTerms` is an
+    # unconfirmed guess. If this store fails with an "input.X is required"
+    # error, change this field name to match (see Tesco's history above).
     apify_search_field: searchTerms
     fields:
       name: title
@@ -133,7 +141,9 @@ stores:
   - name: Waitrose
     enabled: true
     apify_actor_id: illehius/waitrose-scraper
-    apify_search_field: searchTerms
+    # Same publisher as illehius/tesco-scraper, which confirmed `queries` is the
+    # required field - not independently verified for this actor yet.
+    apify_search_field: queries
     fields:
       name: title
       price: price
@@ -182,6 +192,9 @@ stores:
   - name: Aldi
     enabled: true
     apify_actor_id: studio-amba/aldi-scraper
+    # Different publisher to the illehius actors above - `searchTerms` is an
+    # unconfirmed guess. If this store fails with an "input.X is required"
+    # error, change this field name to match (see Tesco's history above).
     apify_search_field: searchTerms
     fields:
       name: title
