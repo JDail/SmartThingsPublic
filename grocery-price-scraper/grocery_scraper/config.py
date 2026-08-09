@@ -48,6 +48,7 @@ def load_stores(path: Path) -> list[StoreConfig]:
                 apify_actor_id=s.get("apify_actor_id"),
                 apify_search_field=s.get("apify_search_field", "searchTerms"),
                 apify_extra_input=s.get("apify_extra_input", {}),
+                apify_data_root=s.get("apify_data_root"),
                 fields=FieldMapping(
                     name=fields_dict.get("name", "title"),
                     price=fields_dict.get("price", "price"),

@@ -35,10 +35,18 @@ logger = logging.getLogger(__name__)
 BASE_DIR = Path(__file__).parent.parent
 
 
+def _unwrap(raw_products: list[dict], data_root: str | None) -> list[dict]:
+    """Some actors wrap each result in an envelope, e.g. {"success": true, "data": {...}}.
+    Unwrap to the inner dict (per store.apify_data_root) before field-mapping is applied."""
+    if not data_root:
+        return raw_products
+    return [p[data_root] for p in raw_products if isinstance(p.get(data_root), dict)]
+
+
 def build_quotes_from_raw(shopping_list, stores, raw_by_store: dict[str, list[dict]]):
     quotes: dict[str, dict[str, PriceQuote]] = {}
     for store in stores:
-        raw_products = raw_by_store.get(store.name, [])
+        raw_products = _unwrap(raw_by_store.get(store.name, []), store.apify_data_root)
         store_quotes = {}
         for item in shopping_list:
             match = best_match(item, store.name, raw_products, store.fields)

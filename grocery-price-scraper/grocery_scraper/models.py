@@ -65,6 +65,9 @@ class StoreConfig:
     apify_actor_id: Optional[str] = None
     apify_search_field: str = "searchTerms"
     apify_extra_input: dict = field(default_factory=dict)
+    # Some actors wrap each result in an envelope, e.g. {"success": true, "data": {...actual product...}}.
+    # Set this to the wrapper key (e.g. "data") to unwrap before applying `fields:` below.
+    apify_data_root: Optional[str] = None
     fields: FieldMapping = field(default_factory=FieldMapping)
     fulfillment: list[FulfillmentOption] = field(default_factory=list)
     notes: str = ""
