@@ -61,11 +61,8 @@ stores:
         verified: true
 
   - name: Asda
-    # Temporarily disabled - already confirmed working against the real
-    # shopping list (9 Aug 2026), cached at output/raw/Asda.raw.json. Saving
-    # credit while the other stores get sorted out; will re-combine everyone
-    # via --from-raw once they're all confirmed.
-    enabled: false
+    # Confirmed working against the real shopping list (9 Aug 2026).
+    enabled: true
     apify_actor_id: illehius/asda-scraper
     # Same publisher as illehius/tesco-scraper, which confirmed `queries` is the
     # required field - confirmed independently for this actor too (real run,
@@ -140,10 +137,8 @@ stores:
         verified: true
 
   - name: Morrisons
-    # Temporarily disabled - already confirmed working against the real
-    # shopping list (9 Aug 2026), cached at output/raw/Morrisons.raw.json.
-    # Saving credit; will re-combine via --from-raw once everyone's sorted.
-    enabled: false
+    # Confirmed working against the real shopping list (9 Aug 2026).
+    enabled: true
     # Attempt 1, studio-amba/morrisons-scraper: ignored our search terms
     # entirely and just crawled the first 100 products of its "full catalog"
     # mode - not usable for targeted list lookups.
