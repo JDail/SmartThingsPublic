@@ -61,10 +61,15 @@ stores:
     enabled: true
     apify_actor_id: illehius/asda-scraper
     # Same publisher as illehius/tesco-scraper, which confirmed `queries` is the
-    # required field - not independently verified for this actor yet.
+    # required field - confirmed independently for this actor too (real run,
+    # 9 Aug 2026): it also uses `queries`.
     apify_search_field: queries
+    # Confirmed via output/raw/Asda.raw.json (9 Aug 2026): product name field
+    # is `name`, not `title`. price/unitPrice were already correct. No
+    # inStock field exists in this actor's output at all - matcher.py
+    # defaults to "in stock" when the key is missing, so that's fine as-is.
     fields:
-      name: title
+      name: name
       price: price
       unit_price: unitPrice
       in_stock: inStock
