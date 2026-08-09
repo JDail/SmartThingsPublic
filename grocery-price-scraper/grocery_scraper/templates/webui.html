@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Grocery catalog</title>
+<style>
+  :root { color-scheme: light dark; }
+  body { font-family: -apple-system, Segoe UI, Roboto, sans-serif; max-width: 960px; margin: 2rem auto; padding: 0 1rem; line-height: 1.4; }
+  h1 { font-size: 1.4rem; }
+  h2 { font-size: 1.1rem; margin-top: 2rem; }
+  .muted { color: #777; font-size: 0.85rem; }
+  .banner { padding: 0.75rem 1rem; border-radius: 8px; margin: 1rem 0; background: #d9f2df; color: #14532d; font-weight: 600; }
+  table { border-collapse: collapse; width: 100%; margin: 0.75rem 0 1.5rem; font-size: 0.92rem; }
+  th, td { border: 1px solid #ccc; padding: 0.4rem 0.6rem; text-align: left; vertical-align: middle; }
+  th { background: #f2f2f2; color: #1a1a1a; }
+  input[type=text], input[type=number] { width: 100%; box-sizing: border-box; padding: 0.3rem; }
+  .price-form, .add-form { display: flex; gap: 0.4rem; align-items: center; }
+  .price-form input[type=number] { width: 5rem; }
+  form.inline { display: inline; }
+  .add-form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 0.6rem; align-items: end; margin: 0.75rem 0 1.5rem; }
+  .add-form-grid label { display: block; font-size: 0.8rem; color: #777; margin-bottom: 0.2rem; }
+  button { cursor: pointer; padding: 0.4rem 0.8rem; }
+  .danger { color: #b00020; }
+  section { margin-bottom: 2rem; }
+</style>
+</head>
+<body>
+
+<h1>Grocery catalog</h1>
+<p class="muted">Manages config/catalog.yaml and config/shopping_list.yaml only - doesn't call Apify or spend any money. Run <code>python -m grocery_scraper.run</code> separately to actually fetch prices.</p>
+
+{% if saved is not none %}
+<div class="banner">Wrote {{ saved }} items to shopping_list.yaml. Now run <code>python -m grocery_scraper.run -v</code> in your terminal to price it.</div>
+{% endif %}
+
+<section>
+<h2>Add a new product</h2>
+<form class="add-form-grid" method="post" action="{{ url_for('add_item') }}">
+  <div>
+    <label>Name</label>
+    <input type="text" name="name" required>
+  </div>
+  <div>
+    <label>Unit</label>
+    <input type="text" name="unit" value="each">
+  </div>
+  <div>
+    <label>Usual quantity</label>
+    <input type="number" name="default_quantity" value="1" step="any">
+  </div>
+  <div>
+    <label>Aliases (comma-separated)</label>
+    <input type="text" name="aliases" placeholder="e.g. brand name, size">
+  </div>
+  <div>
+    <button type="submit">Add product</button>
+  </div>
+</form>
+</section>
+
+<section>
+<h2>Catalog ({{ catalog|length }} products)</h2>
+<table>
+<thead>
+<tr>
+  <th>Name</th>
+  <th>Unit</th>
+  <th>Usual qty</th>
+  <th>Aliases</th>
+  {% for store in manual_stores %}
+  <th>{{ store }} price</th>
+  {% endfor %}
+  <th></th>
+</tr>
+</thead>
+<tbody>
+{% for item in catalog %}
+<tr>
+  <td>{{ item.name }}</td>
+  <td>{{ item.unit }}</td>
+  <td>{{ item.default_quantity }}</td>
+  <td class="muted">{{ item.aliases|join(", ") }}</td>
+  {% for store in manual_stores %}
+  <td>
+    <form class="price-form" method="post" action="{{ url_for('update_price', name=item.name) }}">
+      <input type="hidden" name="store" value="{{ store }}">
+      <span>£</span>
+      <input type="number" name="price" step="0.01" min="0" value="{{ item.manual_prices.get(store, '') }}">
+      <button type="submit">Save</button>
+    </form>
+  </td>
+  {% endfor %}
+  <td>
+    <form class="inline" method="post" action="{{ url_for('delete_item', name=item.name) }}" onsubmit="return confirm('Remove {{ item.name }} from the catalog?');">
+      <button type="submit" class="danger">Delete</button>
+    </form>
+  </td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+</section>
+
+<section>
+<h2>This week's list</h2>
+<p class="muted">Tick what you want this week and confirm quantities, then submit to regenerate shopping_list.yaml.</p>
+<form method="post" action="{{ url_for('select_this_week') }}">
+<table>
+<thead>
+<tr>
+  <th></th>
+  <th>Name</th>
+  <th>Quantity</th>
+</tr>
+</thead>
+<tbody>
+{% for item in catalog %}
+<tr>
+  <td><input type="checkbox" name="selected" value="{{ item.name }}" checked></td>
+  <td>{{ item.name }}</td>
+  <td><input type="number" name="qty__{{ item.name }}" value="{{ item.default_quantity }}" step="any"></td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+<button type="submit">Generate this week's shopping list</button>
+</form>
+</section>
+
+</body>
+</html>
