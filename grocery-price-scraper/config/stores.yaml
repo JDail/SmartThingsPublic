@@ -271,6 +271,11 @@ stores:
 
   - name: Iceland
     enabled: true
+    # Manual prices instead of a scraper - see notes below and README.
+    # Prices come from config/catalog.yaml's manual_prices.Iceland, keyed by
+    # exact item name (no fuzzy matching needed, you pick the exact product
+    # yourself when you note the price down).
+    manual: true
     apify_actor_id: null
     apify_search_field: searchTerms
     fields:
@@ -291,7 +296,7 @@ stores:
         available: true
         fee: 0.0
         verified: true
-    notes: "No confirmed dedicated Iceland Apify actor at time of writing - search the Apify Store before enabling; left as apify_actor_id: null so it's skipped until you wire one up."
+    notes: "No dedicated Iceland scraper exists (confirmed via extensive research 9 Aug 2026), the Trolley.co.uk aggregator can't run within Apify budget, Iceland's formal Amazon marketplace seller catalog is a different/incomplete product set with no milk/bread/eggs, and Amazon's product Detail API returns the wrong currency (USD) and wrong regional price for grocery-partnership items. Manual price entry is the practical option - see manual: true above."
 
   - name: Poundland
     enabled: false

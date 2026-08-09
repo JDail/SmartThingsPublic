@@ -1,4 +1,4 @@
-"""Loads shopping_list.yaml and stores.yaml into typed objects."""
+"""Loads shopping_list.yaml, catalog.yaml and stores.yaml into typed objects."""
 
 from __future__ import annotations
 
@@ -6,7 +6,7 @@ from pathlib import Path
 
 import yaml
 
-from .models import FieldMapping, FulfillmentOption, ShoppingItem, StoreConfig
+from .models import CatalogItem, FieldMapping, FulfillmentOption, ShoppingItem, StoreConfig
 
 
 def load_shopping_list(path: Path) -> list[ShoppingItem]:
@@ -18,6 +18,20 @@ def load_shopping_list(path: Path) -> list[ShoppingItem]:
             unit=item.get("unit", "each"),
             aliases=item.get("aliases", []),
             notes=item.get("notes", ""),
+        )
+        for item in data["items"]
+    ]
+
+
+def load_catalog(path: Path) -> list[CatalogItem]:
+    data = yaml.safe_load(path.read_text(encoding="utf-8"))
+    return [
+        CatalogItem(
+            name=item["name"],
+            unit=item.get("unit", "each"),
+            default_quantity=item.get("default_quantity", 1.0),
+            aliases=item.get("aliases", []),
+            manual_prices=item.get("manual_prices", {}),
         )
         for item in data["items"]
     ]
@@ -45,6 +59,7 @@ def load_stores(path: Path) -> list[StoreConfig]:
             StoreConfig(
                 name=s["name"],
                 enabled=s.get("enabled", True),
+                manual=s.get("manual", False),
                 apify_actor_id=s.get("apify_actor_id"),
                 apify_search_field=s.get("apify_search_field", "searchTerms"),
                 apify_extra_input=s.get("apify_extra_input", {}),

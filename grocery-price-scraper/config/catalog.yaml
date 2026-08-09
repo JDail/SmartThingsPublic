@@ -1,0 +1,71 @@
+# Your master product catalog - everything you might buy, not just this
+# week's list. Add new products here as you discover them (no need to buy
+# them every week).
+#
+# Before each price review, run:
+#   python -m grocery_scraper.select_items
+# to tick which of these you want this week and set quantities - that
+# generates config/shopping_list.yaml, which the rest of the tool reads as
+# usual. Don't hand-edit shopping_list.yaml directly, it gets overwritten.
+#
+# manual_prices: prices you've noted yourself for stores with no working
+# scraper (currently just Iceland - see README for why). Update these
+# whenever you shop there; stale prices are still better than no price, but
+# don't let them go too many weeks without a refresh.
+
+items:
+  - name: Onken Fat Free Vanilla Yogurt 450g
+    default_quantity: 2
+    unit: each
+    aliases: ["Onken Vanilla Yogurt", "Onken fat free yogurt vanilla"]
+    manual_prices: {}
+
+  - name: Happy Egg Company 10 Large Free Range Eggs
+    default_quantity: 1
+    unit: each
+    aliases: ["Happy Egg free range eggs 10", "free range eggs 10 large"]
+    manual_prices: {}
+
+  - name: Warburtons Toastie White Bread 800g
+    default_quantity: 1
+    unit: each
+    aliases: ["Warburtons white bread 800g", "Warburtons toastie bread"]
+    manual_prices: {}
+
+  - name: Baker Street 6 Seeded Burger Buns
+    default_quantity: 2
+    unit: each
+    aliases: ["Baker Street seeded burger buns", "seeded burger buns 6 pack"]
+    manual_prices: {}
+
+  - name: Cravendale Filtered Fresh Whole Milk 2L
+    default_quantity: 6
+    unit: each
+    aliases: ["Cravendale whole milk 2L", "Cravendale filtered milk"]
+    # Confirmed 9 Aug 2026 from your own Amazon/Iceland browsing session.
+    manual_prices:
+      Iceland: 2.50
+
+  - name: Weetabix Chocolate 24 Biscuits
+    default_quantity: 2
+    unit: each
+    aliases: ["Weetabix Chocolate cereal", "Weetabix chocolate 24"]
+    manual_prices: {}
+
+  - name: Heinz Baked Beans in Tomato Sauce 6 x 415g
+    default_quantity: 1
+    unit: each
+    aliases: ["Heinz baked beans 6 pack", "Heinz beanz 6 x 415g"]
+    manual_prices: {}
+
+  - name: Pepsi Max Cola 2L Bottle
+    default_quantity: 6
+    unit: each
+    aliases: ["Pepsi Max 2L", "Pepsi Max cola bottle"]
+    manual_prices: {}
+
+  - name: Pepsi Max No Caffeine No Sugar Cola 2L
+    default_quantity: 6
+    unit: each
+    aliases: ["Pepsi Max Caffeine Free 2L", "Pepsi Max no caffeine 2L"]
+    manual_prices: {}

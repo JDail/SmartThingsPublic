@@ -25,9 +25,9 @@ import sys
 from datetime import date
 from pathlib import Path
 
-from .config import load_shopping_list, load_stores
+from .config import load_catalog, load_shopping_list, load_stores
 from .matcher import best_match
-from .models import PriceQuote
+from .models import CatalogItem, PriceQuote
 from .optimizer import DEFAULT_SPLIT_SAVINGS_THRESHOLD, recommend
 from .report import render_report
 
@@ -80,6 +80,31 @@ def fetch_live(shopping_list, stores, output_dir: Path) -> dict[str, list[dict]]
     return raw_by_store
 
 
+def build_manual_quotes(shopping_list, catalog: list[CatalogItem], store_name: str) -> dict[str, PriceQuote]:
+    """Prices you've noted yourself in config/catalog.yaml's manual_prices,
+    for stores with no working scraper. Exact catalog-name lookup, not fuzzy
+    matching - you picked the exact product yourself, no guessing needed."""
+    catalog_by_name = {c.name: c for c in catalog}
+    quotes: dict[str, PriceQuote] = {}
+    for item in shopping_list:
+        cat_item = catalog_by_name.get(item.name)
+        if cat_item is None:
+            continue
+        price = cat_item.manual_prices.get(store_name)
+        if price is None:
+            continue
+        quotes[item.name] = PriceQuote(
+            store=store_name,
+            item_name=item.name,
+            matched_product_name=item.name,
+            price=float(price),
+            unit_price=None,
+            in_stock=True,
+            match_score=1.0,
+        )
+    return quotes
+
+
 def load_from_raw_dumps(stores, output_dir: Path) -> dict[str, list[dict]]:
     raw_by_store = {}
     raw_dir = output_dir / "raw"
@@ -100,6 +125,8 @@ def main(argv=None):
                          help="Re-use output/raw/*.raw.json from a previous real run instead of calling Apify again")
     parser.add_argument("--shopping-list", type=Path, default=BASE_DIR / "config" / "shopping_list.yaml")
     parser.add_argument("--stores-config", type=Path, default=BASE_DIR / "config" / "stores.yaml")
+    parser.add_argument("--catalog", type=Path, default=BASE_DIR / "config" / "catalog.yaml",
+                         help="Master catalog with manual prices for stores that have no working scraper")
     parser.add_argument("--output-dir", type=Path, default=BASE_DIR / "output")
     parser.add_argument("--threshold", type=float, default=DEFAULT_SPLIT_SAVINGS_THRESHOLD,
                          help="Minimum £ saving for a split shop to be recommended over one store")
@@ -109,18 +136,26 @@ def main(argv=None):
     logging.basicConfig(level=logging.INFO if args.verbose else logging.WARNING, format="%(levelname)s %(message)s")
 
     shopping_list = load_shopping_list(args.shopping_list)
-    stores = [s for s in load_stores(args.stores_config) if s.enabled]
+    all_stores = [s for s in load_stores(args.stores_config) if s.enabled]
+    apify_stores = [s for s in all_stores if not s.manual]
+    manual_stores = [s for s in all_stores if s.manual]
 
     if args.demo:
         fixture_path = BASE_DIR / "fixtures" / "sample_prices.json"
         raw_by_store = {k: v for k, v in json.loads(fixture_path.read_text(encoding="utf-8")).items() if not k.startswith("_")}
     elif args.from_raw:
-        raw_by_store = load_from_raw_dumps(stores, args.output_dir)
+        raw_by_store = load_from_raw_dumps(apify_stores, args.output_dir)
     else:
-        raw_by_store = fetch_live(shopping_list, stores, args.output_dir)
+        raw_by_store = fetch_live(shopping_list, apify_stores, args.output_dir)
 
-    quotes = build_quotes_from_raw(shopping_list, stores, raw_by_store)
-    recommendation = recommend(shopping_list, stores, quotes, threshold=args.threshold)
+    quotes = build_quotes_from_raw(shopping_list, apify_stores, raw_by_store)
+
+    if manual_stores:
+        catalog = load_catalog(args.catalog)
+        for store in manual_stores:
+            quotes[store.name] = build_manual_quotes(shopping_list, catalog, store.name)
+
+    recommendation = recommend(shopping_list, all_stores, quotes, threshold=args.threshold)
 
     report_path = args.output_dir / f"report-{date.today().isoformat()}.html"
     render_report(shopping_list, recommendation, report_path)
