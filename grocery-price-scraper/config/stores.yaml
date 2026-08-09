@@ -57,10 +57,11 @@ stores:
         verified: true
 
   - name: Asda
-    # Temporarily disabled - already confirmed working (9 Aug 2026) with a
-    # cached raw dump at output/raw/Asda.raw.json. Re-enable once other
-    # stores are confirmed, to save Apify credit on a re-fetch we don't need.
-    enabled: false
+    # Re-enabled: the field-mapping fix was confirmed working, but that was
+    # against the old placeholder shopping list - the cached
+    # output/raw/Asda.raw.json is now stale against the real list and needs
+    # a fresh run.
+    enabled: true
     apify_actor_id: illehius/asda-scraper
     # Same publisher as illehius/tesco-scraper, which confirmed `queries` is the
     # required field - confirmed independently for this actor too (real run,
@@ -141,13 +142,20 @@ stores:
     # check output/raw/Morrisons.raw.json after this run.
     apify_actor_id: bobcodgodkid.1/morrisons-grocery-scraper
     apify_search_field: searchTerms
-    # Guessing `name` rather than `title` - every actor confirmed so far
-    # (Asda, and the previous Morrisons actor's own logs) used `name`.
+    # Confirmed via output/raw/Morrisons.raw.json (9 Aug 2026): real run,
+    # genuinely honoured our search terms (46 products across 27 queries,
+    # cost $0.15). `name` and `price` were right. `unitPrice` was wrong AND
+    # the real data (`unit_price`) is a nested {amount, basis} object our
+    # flat field-mapping can't reach - left as-is since unit price isn't
+    # shown in the report yet anyway. `in_stock` was wrong - real field is
+    # `available` (true/false), fixed below; this actually matters, unlike
+    # other stores where the missing key just fell back to "always in
+    # stock" harmlessly.
     fields:
       name: name
       price: price
       unit_price: unitPrice
-      in_stock: inStock
+      in_stock: available
     fulfillment:
       - kind: delivery
         available: true
@@ -165,10 +173,19 @@ stores:
         verified: true
 
   - name: Waitrose
-    enabled: true
+    enabled: false
     apify_actor_id: illehius/waitrose-scraper
     # Same publisher as illehius/tesco-scraper, which confirmed `queries` is the
     # required field - not independently verified for this actor yet.
+    #
+    # Real run 1 (9 Aug 2026): worked for 4/16 queries then the actor itself
+    # crashed - dataset came back completely empty (0 lines) despite the log
+    # showing real products found before the crash, meaning this actor only
+    # writes output at the very end of a run rather than incrementally.
+    # Real run 2 (9 Aug 2026), 27 queries this time: identical pattern -
+    # crashed after 4 successful searches, dataset empty again. Two crashes
+    # in a row with total data loss - disabled, not worth a third attempt
+    # without investigating the actor's crash cause first.
     apify_search_field: queries
     fields:
       name: title
