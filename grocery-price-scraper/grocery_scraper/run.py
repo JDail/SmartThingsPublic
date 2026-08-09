@@ -7,6 +7,12 @@
     APIFY_TOKEN=xxx python -m grocery_scraper.run
         Runs for real: calls each enabled store's Apify actor, matches
         results to your shopping list, and writes a dated HTML report.
+
+    python -m grocery_scraper.run --from-raw
+        Re-renders the report from whatever's already in output/raw/*.raw.json
+        (written by a previous real run) without calling Apify again. No
+        token needed. Use this after tweaking config/stores.yaml's `fields:`
+        mapping to check the fix without spending more Apify credit.
 """
 
 from __future__ import annotations
@@ -66,9 +72,24 @@ def fetch_live(shopping_list, stores, output_dir: Path) -> dict[str, list[dict]]
     return raw_by_store
 
 
+def load_from_raw_dumps(stores, output_dir: Path) -> dict[str, list[dict]]:
+    raw_by_store = {}
+    raw_dir = output_dir / "raw"
+    for store in stores:
+        dump_path = raw_dir / f"{store.name}.raw.json"
+        if dump_path.exists():
+            raw_by_store[store.name] = json.loads(dump_path.read_text(encoding="utf-8"))
+        else:
+            logger.warning("No cached raw dump for %s at %s - skipping (run without --from-raw first)", store.name, dump_path)
+            raw_by_store[store.name] = []
+    return raw_by_store
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--demo", action="store_true", help="Use fixtures/sample_prices.json instead of calling Apify")
+    parser.add_argument("--from-raw", action="store_true",
+                         help="Re-use output/raw/*.raw.json from a previous real run instead of calling Apify again")
     parser.add_argument("--shopping-list", type=Path, default=BASE_DIR / "config" / "shopping_list.yaml")
     parser.add_argument("--stores-config", type=Path, default=BASE_DIR / "config" / "stores.yaml")
     parser.add_argument("--output-dir", type=Path, default=BASE_DIR / "output")
@@ -85,6 +106,8 @@ def main(argv=None):
     if args.demo:
         fixture_path = BASE_DIR / "fixtures" / "sample_prices.json"
         raw_by_store = {k: v for k, v in json.loads(fixture_path.read_text(encoding="utf-8")).items() if not k.startswith("_")}
+    elif args.from_raw:
+        raw_by_store = load_from_raw_dumps(stores, args.output_dir)
     else:
         raw_by_store = fetch_live(shopping_list, stores, args.output_dir)
 
