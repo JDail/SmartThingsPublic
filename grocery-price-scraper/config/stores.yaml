@@ -19,13 +19,16 @@
 
 stores:
   - name: Tesco
-    enabled: true
+    enabled: false
     # Attempt 1, jupri/tesco-grocery: legacy "rental" Actor, $30/month - rejected.
     # Attempt 2, illehius/tesco-scraper: ran but returned 0 products for every
     # search term then failed - looked like Tesco blocking/breaking this actor.
-    # Attempt 3 (this one): radeance/tesco-scraper. Search-field name and
-    # output field mapping below are unconfirmed guesses - check
-    # output/raw/Tesco.raw.json after this run and fix if empty/unmatched.
+    # Attempt 3, radeance/tesco-scraper (real run 9 Aug 2026): ignored our
+    # searchTerms input entirely (log showed "Keyword: None") and just
+    # crawled 27 random products from a general "fresh-food" category page -
+    # not real search results. Also free-tier limited to 1 run/10 days and
+    # 100 items. Disabled - needs a genuinely different actor, not another
+    # field-name guess.
     apify_actor_id: radeance/tesco-scraper
     apify_search_field: searchTerms
     # Guessing `name` rather than `title` - every actor confirmed so far
@@ -91,13 +94,16 @@ stores:
         verified: true
 
   - name: Sainsburys
-    enabled: true
+    enabled: false
     apify_actor_id: illehius/sainsburys-scraper
-    # Real run (9 Aug 2026): every request failed with "Proxy rejected the
-    # CONNECT tunnel with status code 403" - the actor's own outbound proxy
-    # was being blocked by Sainsbury's. Retrying with an explicit
-    # proxyConfiguration input (Apify's own proxy) below - unconfirmed
-    # whether this is the actual fix or the right input field name for it.
+    # Real run 1 (9 Aug 2026): every request failed with "Proxy rejected the
+    # CONNECT tunnel with status code 403".
+    # Real run 2 (9 Aug 2026): retried with an explicit proxyConfiguration
+    # input (below) - identical 403 failure on every single request, so
+    # either this actor doesn't read that input field at all, or its
+    # outbound proxy is broken regardless of config. Disabled - not worth
+    # more credit on this actor without deeper investigation (e.g. checking
+    # its Issues tab on Apify) or trying a different Sainsbury's actor.
     apify_search_field: queries
     apify_extra_input:
       proxyConfiguration:
