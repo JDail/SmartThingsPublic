@@ -99,18 +99,20 @@ stores:
         verified: true
 
   - name: Sainsburys
-    enabled: true
+    enabled: false
     # Attempt 1, illehius/sainsburys-scraper: every request failed with
     # "Proxy rejected the CONNECT tunnel with status code 403", even after
     # retrying with an explicit proxyConfiguration input - actor looks broken
     # regardless of our input.
-    # Attempt 2 (this one): dromb/sainsburys-uk-grocery-price-availability -
-    # different publisher, confirmed pay-per-result ($0.60/1000 items).
-    # Real run (9 Aug 2026): worked, but wraps each result in an envelope
-    # ({"success": true, "data": {...}}) and nests price two levels deep
-    # ({"currentPrice": {"value": 0.99}}) - confirmed via
-    # output/raw/Sainsburys.raw.json. Fixed below with apify_data_root and
-    # dotted field paths.
+    # Attempt 2, dromb/sainsburys-uk-grocery-price-availability: ran (data
+    # extraction now correctly fixed with apify_data_root + dotted field
+    # paths, confirmed via output/raw/Sainsburys.raw.json), but real-world
+    # match quality was terrible - "bread" matched "grapes", "baked beans"
+    # matched "apples" (real run 9 Aug 2026). The run also finished in ~4.5s,
+    # far too fast for 27 genuine per-term searches (Asda/Morrisons took
+    # 20-30s+ for the same 27 terms). Looks like this actor ignores
+    # searchTerms too and just returns a small generic sample. Disabled -
+    # needs a third Sainsbury's actor, not another field-mapping tweak.
     apify_actor_id: dromb/sainsburys-uk-grocery-price-availability
     apify_search_field: searchTerms
     apify_data_root: data
